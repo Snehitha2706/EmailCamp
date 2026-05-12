@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Papa from 'papaparse';
 import { 
@@ -20,7 +20,7 @@ import { useAuth } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function ContactsPage() {
+function ContactsContent() {
   const { orgRole } = useAuth();
   const router = useRouter();
   const isViewer = orgRole === 'org:viewer';
@@ -430,6 +430,19 @@ export default function ContactsPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function ContactsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh] text-slate-500 font-mono text-sm gap-3">
+        <Loader2 className="h-5 w-5 animate-spin text-emerald-500" />
+        Syncing Physical Cache...
+      </div>
+    }>
+      <ContactsContent />
+    </Suspense>
   );
 }
 
