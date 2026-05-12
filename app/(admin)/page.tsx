@@ -8,6 +8,9 @@ import {
   Send,
   MousePointerClick,
   Eye,
+  AlertTriangle,
+  BarChart3,
+  Trophy
 } from 'lucide-react';
 
 const cardVariants = {
@@ -61,11 +64,25 @@ export default function Dashboard() {
       color: 'purple' 
     },
     { 
-      label: 'Bounce Limit', 
-      value: '0.0%', 
+      label: 'Avg. Click Rate', 
+      value: loading ? '...' : (data?.clickRate || '0.0%'), 
       icon: MousePointerClick, 
-      change: 'SAFE', 
+      change: '+0%', 
+      color: 'sky' 
+    },
+    { 
+      label: 'Bounce Rate', 
+      value: loading ? '...' : (data?.bounceRate || '0.0%'), 
+      icon: AlertTriangle, 
+      change: parseFloat(data?.bounceRate || '0') > 2.0 ? 'RISK' : 'SAFE', 
       color: 'amber' 
+    },
+    { 
+      label: 'Complaint Rate', 
+      value: loading ? '...' : (data?.complaintRate || '0.0%'), 
+      icon: AlertTriangle, 
+      change: parseFloat(data?.complaintRate || '0') > 0.1 ? 'HIGH' : 'SAFE', 
+      color: 'rose' 
     },
   ];
 
@@ -82,7 +99,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -98,10 +115,13 @@ export default function Dashboard() {
               <div className={`p-2.5 rounded-xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 text-${stat.color}-400`}>
                 <stat.icon className="h-5 w-5" />
               </div>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 ${
-                stat.change.startsWith('+') ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+              <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                (stat.change === 'SAFE' || stat.change.startsWith('+')) 
+                  ? 'bg-emerald-500/10 text-emerald-400' 
+                  : 'bg-red-500/10 text-red-400 animate-pulse'
               }`}>
-                {stat.change} <ArrowUpRight className="h-3 w-3" />
+                {stat.change}
+                {stat.change.startsWith('+') && <ArrowUpRight className="h-3 w-3" />}
               </span>
             </div>
             
@@ -187,6 +207,82 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+
+      {/* Top Performing Campaigns */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="glass-panel p-6 space-y-6"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-amber-400" />
+            <div>
+              <h3 className="font-semibold text-lg">Top Performing Campaigns</h3>
+              <p className="text-slate-400 text-xs">Highest signal propagation metrics ordered by open rank</p>
+            </div>
+          </div>
+          <BarChart3 className="h-5 w-5 text-slate-500" />
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-white/5 text-slate-400 text-xs uppercase tracking-wider font-medium">
+                <th className="pb-3 pl-2">Campaign Name</th>
+                <th className="pb-3">Sends</th>
+                <th className="pb-3">Open Rate</th>
+                <th className="pb-3">Click Rate</th>
+                <th className="pb-3 text-right pr-2">Performance</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-sm text-slate-500 animate-pulse">
+                    Computing propagation metrics...
+                  </td>
+                </tr>
+              ) : (!data?.topCampaigns || data.topCampaigns.length === 0) ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-sm text-slate-600 italic">
+                    No campaign history qualified for performance profiling.
+                  </td>
+                </tr>
+              ) : data.topCampaigns.map((camp: any, i: number) => (
+                <tr key={camp.id} className="group hover:bg-white/[0.02] transition-colors">
+                  <td className="py-4 pl-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono text-slate-600">0{i+1}</span>
+                      <span className="font-medium text-slate-200 group-hover:text-emerald-400 transition-colors cursor-pointer">
+                        {camp.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4 text-sm text-slate-400 font-mono">{camp.sends}</td>
+                  <td className="py-4">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-purple-400">
+                      {camp.openRate}
+                    </span>
+                  </td>
+                  <td className="py-4">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-sky-400">
+                      {camp.clickRate}
+                    </span>
+                  </td>
+                  <td className="py-4 text-right pr-2">
+                    <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Active Rank
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
     </div>
   );
 }

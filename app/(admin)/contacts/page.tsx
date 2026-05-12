@@ -17,12 +17,16 @@ import {
   Trash2
 } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ContactsPage() {
   const { orgRole } = useAuth();
   const router = useRouter();
   const isViewer = orgRole === 'org:viewer';
+
+  const searchParams = useSearchParams();
+  const listParam = searchParams.get('listId') || '';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [contacts, setContacts] = useState<any[]>([]);
@@ -32,8 +36,12 @@ export default function ContactsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '' });
   const [lists, setLists] = useState<any[]>([]);
-  const [selectedList, setSelectedList] = useState('');
+  const [selectedList, setSelectedList] = useState(listParam);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (listParam) setSelectedList(listParam);
+  }, [listParam]);
 
   async function loadLists() {
     try {
@@ -259,13 +267,19 @@ export default function ContactsPage() {
             </select>
           </div>
 
-          <button className="flex-1 md:flex-none px-3 py-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2 text-xs font-medium hover:bg-white/5 transition text-slate-300">
+          <Link 
+            href="/contacts/segments"
+            className="flex-1 md:flex-none px-3 py-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2 text-xs font-medium hover:bg-white/5 transition text-indigo-400"
+          >
             <Filter className="h-3.5 w-3.5" />
-            Filters
-          </button>
-          <button className="flex-1 md:flex-none px-3 py-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2 text-xs font-medium hover:bg-white/5 transition text-slate-300">
-            Lists: All
-          </button>
+            Segments
+          </Link>
+          <Link 
+            href="/contacts/lists"
+            className="flex-1 md:flex-none px-3 py-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2 text-xs font-medium hover:bg-white/5 transition text-blue-400"
+          >
+            Structure Grid
+          </Link>
         </div>
       </div>
 
