@@ -101,7 +101,7 @@ export default function AdminLayout({
         {/* Global Glass Header */}
         <header className="sticky top-0 z-10 h-16 border-b border-card-border bg-background/80 backdrop-blur-md px-4 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => setIsMobileNavOpen(true)} className="p-2 text-slate-400 md:hidden hover:text-white transition-colors">
+            <button onClick={() => setIsMobileNavOpen(true)} className="p-2 text-slate-400 block md:hidden hover:text-white transition-colors">
               <Menu className="h-5 w-5" />
             </button>
             <h2 className="text-sm font-medium text-slate-400 hidden sm:block">Operational Core</h2>
