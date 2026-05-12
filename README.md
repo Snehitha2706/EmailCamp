@@ -45,7 +45,7 @@ graph TD
     C -->|ORM Queries| D[(PostgreSQL + Prisma)]
     C -->|Webhook Tunnel| E(AWS SNS)
     C -->|Parallel Burst| F[AWS SES Dispatch]
-    C -->|Internal Heartbeat| G[/api/cron/dispatch]
+    C -->|Internal Heartbeat| G["/api/cron/dispatch"]
     G -->|Autonomic Trigger| F
     F -->|Event Callback| E
     E -->|Blacklist Logic| D
