@@ -100,7 +100,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8 space-y-8 max-w-5xl mx-auto pb-24">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-5xl mx-auto pb-24">
       
       {/* Header Vector */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -130,7 +130,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-2 space-y-8">
           
           {/* Block 1: Workspace Matrix */}
-          <div className="glass-panel p-8 rounded-3xl border border-card-border bg-[#131316] relative overflow-hidden group">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-card-border bg-[#131316] relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-5 text-slate-400 group-hover:opacity-10 transition-opacity">
               <Globe className="h-24 w-24" />
             </div>
