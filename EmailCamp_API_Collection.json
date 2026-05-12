@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "67d82a9d-e51b-4cc7-ae21-77285405f7e3",
+		"name": "EmailCamp API Platform",
+		"description": "Functional collection covering core matrix endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Audience",
+			"item": [
+				{
+					"name": "List Audience Pool",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/contacts",
+							"host": ["{{baseUrl}}"],
+							"path": ["contacts"]
+						}
+					}
+				},
+				{
+					"name": "Register Identity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"target@domain.com\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contacts",
+							"host": ["{{baseUrl}}"],
+							"path": ["contacts"]
+						}
+					}
+				},
+				{
+					"name": "Bulk Ingestion CSV",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/contacts/import",
+							"host": ["{{baseUrl}}"],
+							"path": ["contacts", "import"]
+						}
+					}
+				},
+				{
+					"name": "Fetch Mailing Lists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/lists",
+							"host": ["{{baseUrl}}"],
+							"path": ["lists"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"item": [
+				{
+					"name": "Load Campaign History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/campaigns",
+							"host": ["{{baseUrl}}"],
+							"path": ["campaigns"]
+						}
+					}
+				},
+				{
+					"name": "Initialize Campaign Strategy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Q3 Activation Sequence\",\n  \"subject\": \"Initialize Phase 3\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/campaigns",
+							"host": ["{{baseUrl}}"],
+							"path": ["campaigns"]
+						}
+					}
+				},
+				{
+					"name": "Validate Delivery Vector",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/campaigns/test",
+							"host": ["{{baseUrl}}"],
+							"path": ["campaigns", "test"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Content & Logic",
+			"item": [
+				{
+					"name": "Index Templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/templates",
+							"host": ["{{baseUrl}}"],
+							"path": ["templates"]
+						}
+					}
+				},
+				{
+					"name": "Load Dynamic Segments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/segments",
+							"host": ["{{baseUrl}}"],
+							"path": ["segments"]
+						}
+					}
+				},
+				{
+					"name": "Automation Sequence Catalog",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/automations",
+							"host": ["{{baseUrl}}"],
+							"path": ["automations"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Analytics & Control",
+			"item": [
+				{
+					"name": "Aggregate Metric Matrix",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["dashboard", "stats"]
+						}
+					}
+				},
+				{
+					"name": "Lockdown Inventory (Suppression)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/settings/suppression",
+							"host": ["{{baseUrl}}"],
+							"path": ["settings", "suppression"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	]
+}
