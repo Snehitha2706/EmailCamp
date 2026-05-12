@@ -37,26 +37,32 @@ export async function executeCampaignDispatch(campaignId: string) {
     // Set system status to blocking lock so multiple crons don't fight over it!
     await prisma.campaign.update({ where: { id: campaignId }, data: { status: 'sending' } });
 
-    // 3. Fetch target audience dynamically based on segmentation keys
-    let targets = [];
+    // 3. LOAD SUPPRESSION ARSENAL (M7 Defense)
+    const blacklist = await prisma.suppressionEntry.findMany({
+      where: { orgId: orgId },
+      select: { email: true }
+    });
+    const bannedSet = new Set(blacklist.map(b => b.email.toLowerCase().trim()));
+
+    // 4. Fetch target audience dynamically based on segmentation keys
+    let rawTargets = [];
     
     if (campaign.targetListId) {
-      // Extract restricted list membership
-      targets = await prisma.contact.findMany({
+      rawTargets = await prisma.contact.findMany({
         where: { 
           orgId: orgId, 
           status: 'active',
-          listMemberships: {
-            some: { listId: campaign.targetListId }
-          }
+          listMemberships: { some: { listId: campaign.targetListId } }
         }
       });
     } else {
-      // Universal Default (All Active)
-      targets = await prisma.contact.findMany({
+      rawTargets = await prisma.contact.findMany({
         where: { orgId: orgId, status: 'active' }
       });
     }
+
+    // 🛡️ AIRTIGHT SUPPRESSION ANTI-JOIN (Prevent dispatch to imported zombies)
+    const targets = rawTargets.filter(c => !bannedSet.has(c.email.toLowerCase().trim()));
 
     if (targets.length === 0) {
       await prisma.campaign.update({ where: { id: campaignId }, data: { status: 'draft' } });
@@ -97,12 +103,24 @@ export async function executeCampaignDispatch(campaignId: string) {
           ? html.replace('</body>', `${unsub}${pixel}</body>`)
           : `${html}${unsub}${pixel}`;
 
-        // D. Dispatch via AWS
+        // D. Prepare Compliance Headers (M8 RFC 8058)
+        // Gmail & Yahoo look for this URL in the header to activate the Native "Unsubscribe" button in-app
+        const oneClickEndpoint = `${baseUrl}/api/unsubscribe/one-click?cid=${contact.id}&camp=${campaignId}`;
+        
+        const complianceHeaders = {
+          'List-Unsubscribe': `<${oneClickEndpoint}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          'Precedence': 'bulk',
+          'X-Campaign-ID': campaignId
+        };
+
+        // E. Dispatch via Refined AWS Pipe
         const resp = await sendEmail({
           to: contact.email,
           from: fromEmail,
           subject: subject,
           html: finalHtml,
+          headers: complianceHeaders,
           credentials: awsConfig
         });
 

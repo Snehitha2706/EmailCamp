@@ -1,11 +1,11 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { SESClient, SendRawEmailCommand } from "@aws-sdk/client-ses";
 
 interface EmailPayload {
   to: string;
   from: string;
   subject: string;
   html: string;
-  // Allow dynamic credentials to be passed in from the caller/database!
+  headers?: Record<string, string>; // NEW: Supports custom injectables like List-Unsubscribe
   credentials?: {
     accessKeyId: string;
     secretAccessKey: string;
@@ -18,11 +18,10 @@ export async function sendEmail({
   from,
   subject,
   html,
+  headers = {},
   credentials
 }: EmailPayload) {
   
-  // Create an on-the-fly client using DB-sourced configuration if available
-  // Fall back to standard environment variables for test mode
   const region = credentials?.region || process.env.AWS_REGION || "ap-south-1";
   
   const client = new SESClient({
@@ -36,30 +35,36 @@ export async function sendEmail({
     }
   });
 
-  const command = new SendEmailCommand({
-    Destination: {
-      ToAddresses: [to],
+  // 🔥 RFC822 MIME Assembly for Header Control
+  const headerBuffer: string[] = [
+    `From: ${from}`,
+    `To: ${to}`,
+    // Standard UTF-8 Safe encoding for subject lines
+    `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/html; charset=UTF-8`
+  ];
+
+  // Inject customized system headers
+  Object.entries(headers).forEach(([key, val]) => {
+    if (val) headerBuffer.push(`${key}: ${val}`);
+  });
+
+  // Complete the stream with double CRLF break to body
+  const rawMessage = headerBuffer.join("\r\n") + "\r\n\r\n" + html;
+
+  const command = new SendRawEmailCommand({
+    RawMessage: {
+      Data: Buffer.from(rawMessage, 'utf-8'),
     },
-    Message: {
-      Body: {
-        Html: {
-          Charset: "UTF-8",
-          Data: html,
-        },
-      },
-      Subject: {
-        Charset: "UTF-8",
-        Data: subject,
-      },
-    },
-    Source: from,
+    Source: from
   });
 
   try {
     const response = await client.send(command);
     return { success: true, messageId: response.MessageId };
   } catch (error: any) {
-    console.error("DYNAMIC AWS SES FAULT:", error);
-    throw new Error(`SES Dispatch Failed: ${error.message || "Unknown error"}`);
+    console.error("DYNAMIC AWS SES RAW FAULT:", error);
+    throw new Error(`SES Raw Dispatch Failed: ${error.message || "Unknown error"}`);
   }
 }
