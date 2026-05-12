@@ -1,4 +1,4 @@
-# ⚡️ PULSESEND
+# ⚡️ EmailCamp
 
 > **Enterprise-Grade Email Campaign Orchestration Engine**
 > Built for absolute scale, precision tracking, and autonomic delivery.
@@ -11,7 +11,7 @@
 ---
 
 ## 🚀 Mission Profile
-**PulseSend** transforms complex email delivery into a streamlined, highly visual operation. Architected from the ground up using the **Next.js App Router**, it couples an elite **Drag & Drop Visual Builder** with an industrial **AWS SES / SNS Parallel Dispatch Engine** to provide sub-second open/click tracking and autonomic scheduling.
+**EmailCamp** transforms complex email delivery into a streamlined, highly visual operation. Architected from the ground up using the **Next.js App Router**, it couples an elite **Drag & Drop Visual Builder** with an industrial **AWS SES / SNS Parallel Dispatch Engine** to provide sub-second open/click tracking and autonomic scheduling.
 
 ## 🔥 Elite Features
 
@@ -103,4 +103,4 @@ npm run dev
 
 ## ⚖️ Intellectual License
 Engineered as high-tier proprietary orchestration architecture. 
-&copy; 2026 PulseSend. All Operational Vectors Released.
+&copy; 2026 EmailCamp. All Operational Vectors Released.
