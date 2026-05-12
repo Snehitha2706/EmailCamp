@@ -1,0 +1,211 @@
+openapi: 3.0.3
+info:
+  title: EmailCamp Platform API
+  description: Comprehensive API framework driving the EmailCamp high-signal communication platform. 
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Base API context relative to standard deployment URL
+
+tags:
+  - name: Authentication
+  - name: Audience
+  - name: Content
+  - name: Delivery
+  - name: Analytics
+  - name: Configuration
+
+paths:
+  # --- AUDIENCE VECTOR ---
+  /contacts:
+    get:
+      tags: [Audience]
+      summary: List Audience Pool
+      description: Returns scoped registry of active dynamic identities.
+      parameters:
+        - name: listId
+          in: query
+          schema:
+            type: string
+          description: Restrict capture to single Mailing List container.
+      responses:
+        '200':
+          description: Array of populated Contact models.
+    post:
+      tags: [Audience]
+      summary: Register Identity
+      description: Initiates direct manual creation of a contact entity.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string }
+                firstName: { type: string }
+                lastName: { type: string }
+      responses:
+        '200':
+          description: Ingestion success.
+
+  /contacts/import:
+    post:
+      tags: [Audience]
+      summary: Bulk Ingestion
+      description: Accepts high-volume CSV raw payloads for batch ingestion pipeline spooling.
+      responses:
+        '200':
+          description: Spool established.
+
+  /contacts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags: [Audience]
+      summary: Purge Entity
+      description: Forces definitive erasure of specific contact vectors.
+      responses:
+        '200':
+          description: Partition purged.
+
+  /lists:
+    get:
+      tags: [Audience]
+      summary: Fetch Containers
+      description: Retrieves definition map of physical mailing structures.
+      responses:
+        '200':
+          description: Definition list.
+    post:
+      tags: [Audience]
+      summary: Generate Container
+      description: Establishes new unique grouping pool.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        '200':
+          description: Instantiation success.
+
+  /segments:
+    get:
+      tags: [Audience]
+      summary: Load Rule Sets
+      description: Recovers active rule-based dynamic filtration matrices.
+    post:
+      tags: [Audience]
+      summary: Compile Strategy
+      description: Persists complex logical condition sets for runtime audience slicing.
+
+  # --- CONTENT & TEMPLATES ---
+  /templates:
+    get:
+      tags: [Content]
+      summary: Index Asset Map
+    post:
+      tags: [Content]
+      summary: Craft New Payload
+
+  /templates/{id}/update:
+    post:
+      tags: [Content]
+      summary: Commit State
+      description: Saves latest HTML/JSON payload deltas to existing template key.
+
+  # --- DELIVERY INFRASTRUCTURE ---
+  /campaigns:
+    get:
+      tags: [Delivery]
+      summary: History Log
+    post:
+      tags: [Delivery]
+      summary: Initialize Strategy
+
+  /campaigns/{id}:
+    get:
+      tags: [Delivery]
+      summary: Detail View
+
+  /campaigns/{id}/send:
+    post:
+      tags: [Delivery]
+      summary: Authorize Propogation
+      description: Physically triggers spool execution pipeline (Immediate or Cron-bound).
+
+  /campaigns/test:
+    post:
+      tags: [Delivery]
+      summary: Validate Delivery Vector
+      description: Dispatches single isolated sample target validation packet.
+
+  # --- ANALYTICAL LAYER ---
+  /dashboard/stats:
+    get:
+      tags: [Analytics]
+      summary: Aggregate Metric Matrix
+      description: Solves live computation of bounce%, delivery success, and open-ratios.
+
+  /campaigns/{id}/report:
+    get:
+      tags: [Analytics]
+      summary: Granular Vector Report
+      description: Discrete performance event-chain breakdown.
+
+  # --- AUTOMATION & CONFIG ---
+  /automations:
+    get:
+      tags: [Configuration]
+      summary: Sequence Catalog
+    post:
+      tags: [Configuration]
+      summary: Engage Sequence Construct
+
+  /settings/suppression:
+    get:
+      tags: [Configuration]
+      summary: Lockdown Inventory
+    post:
+      tags: [Configuration]
+      summary: Authorize Lockdown
+    delete:
+      tags: [Configuration]
+      summary: Lift Containment
+
+  /settings/organisation:
+    get:
+      tags: [Configuration]
+      summary: Retrieve Org Credential Topology
+    post:
+      tags: [Configuration]
+      summary: Calibrate System Keys (AWS SES/S3)
+
+  # --- TRACKING WEBHOOKS ---
+  /track/click:
+    get:
+      tags: [Analytics]
+      summary: Pixel Divert Router
+      description: Records telemetry event then forces user redirect to final destination.
+
+  /track/open/{campaignId}/{contactId}:
+    get:
+      tags: [Analytics]
+      summary: Render Beacon
+      description: Serves 1x1 transparent payload to verify physical device render.
+
+  /webhooks/ses:
+    post:
+      tags: [Analytics]
+      summary: AWS SNS Receiver
+      description: Inbound payload digestion for hard-bounces and user complaints.

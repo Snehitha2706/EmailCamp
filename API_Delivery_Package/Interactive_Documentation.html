@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>EmailCamp Interactive API Portal</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+    <style>
+      html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+      *, *:before, *:after { box-sizing: inherit; }
+      body { margin:0; background: #fafafa; }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    
+    <script>
+    window.onload = function() {
+      // We define the exact Swagger model right here in the HTML to fix all File loading errors forever
+      const spec = {
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EmailCamp Platform API",
+    "description": "Official framework underlying global communication routing systems.",
+    "version": "1.0.0"
+  },
+  "servers": [ { "url": "/api", "description": "Live Context" } ],
+  "paths": {
+    "/contacts": {
+      "get": { "tags": ["Audience"], "summary": "List Dynamic Pool" },
+      "post": { "tags": ["Audience"], "summary": "Ingest Single Entity" }
+    },
+    "/contacts/import": {
+      "post": { "tags": ["Audience"], "summary": "Execute CSV Batch Stream" }
+    },
+    "/lists": {
+      "get": { "tags": ["Audience"], "summary": "Retrieve Mailing Frameworks" },
+      "post": { "tags": ["Audience"], "summary": "Generate Segment Containers" }
+    },
+    "/templates": {
+      "get": { "tags": ["Content"], "summary": "Render Master Asset Index" },
+      "post": { "tags": ["Content"], "summary": "Commit New HTML Variant" }
+    },
+    "/campaigns": {
+      "get": { "tags": ["Delivery"], "summary": "Historical Logs View" },
+      "post": { "tags": ["Delivery"], "summary": "Queue New Transmission" }
+    },
+    "/campaigns/{id}/send": {
+      "post": { "tags": ["Delivery"], "summary": "Force Real-time Activation" }
+    },
+    "/dashboard/stats": {
+      "get": { "tags": ["Analytics"], "summary": "Solve Global Operational Matrix" }
+    },
+    "/automations": {
+      "get": { "tags": ["Operational"], "summary": "Catalogue Trigger Engines" }
+    }
+  }
+};
+
+      const ui = SwaggerUIBundle({
+        spec: spec, // Injects static directly
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+      window.ui = ui;
+    };
+  </script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EmailCamp API Core Documentation</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body { margin: 0; padding: 0; }</style>
+</head>
+<body>
+  <div id="redoc-container"></div>
+  <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+  <script>
+    const apiSpec = {
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EmailCamp Platform API",
+    "description": "Comprehensive API framework driving the EmailCamp high-signal communication platform.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "/api", "description": "Base API" }
+  ],
+  "tags": [
+    { "name": "Audience" },
+    { "name": "Content" },
+    { "name": "Delivery" },
+    { "name": "Analytics" },
+    { "name": "Configuration" }
+  ],
+  "paths": {
+    "/contacts": {
+      "get": { "tags": ["Audience"], "summary": "List Audience Pool" },
+      "post": { "tags": ["Audience"], "summary": "Register Identity" }
+    },
+    "/contacts/import": {
+      "post": { "tags": ["Audience"], "summary": "Bulk Ingestion" }
+    },
+    "/contacts/{id}": {
+      "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "delete": { "tags": ["Audience"], "summary": "Purge Entity" }
+    },
+    "/lists": {
+      "get": { "tags": ["Audience"], "summary": "Fetch Containers" },
+      "post": { "tags": ["Audience"], "summary": "Generate Container" }
+    },
+    "/segments": {
+      "get": { "tags": ["Audience"], "summary": "Load Rule Sets" },
+      "post": { "tags": ["Audience"], "summary": "Compile Strategy" }
+    },
+    "/templates": {
+      "get": { "tags": ["Content"], "summary": "Index Asset Map" },
+      "post": { "tags": ["Content"], "summary": "Craft New Payload" }
+    },
+    "/campaigns": {
+      "get": { "tags": ["Delivery"], "summary": "History Log" },
+      "post": { "tags": ["Delivery"], "summary": "Initialize Strategy" }
+    },
+    "/campaigns/{id}/send": {
+      "post": { "tags": ["Delivery"], "summary": "Authorize Propogation" }
+    },
+    "/dashboard/stats": {
+      "get": { "tags": ["Analytics"], "summary": "Aggregate Metric Matrix" }
+    },
+    "/settings/suppression": {
+      "get": { "tags": ["Configuration"], "summary": "Lockdown Inventory" }
+    }
+  }
+};
+    Redoc.init(apiSpec, {
+      theme: {
+        colors: {
+          primary: {
+            main: '#10b981'
+          }
+        }
+      }
+    }, document.getElementById('redoc-container'))
+  </script>
+</body>
+</html>
