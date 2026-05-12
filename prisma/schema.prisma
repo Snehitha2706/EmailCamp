@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String?
+  role          String   @default("viewer") // admin, manager, viewer
+  orgId         String
+  organisation  Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Organisation {
+  id            String   @id @default(cuid())
+  name          String
+  logoUrl       String?
+  fromEmail     String?
+  sesConfigSet  String?
+  awsRegion     String?  @default("us-east-1")
+  sesAccessKey  String?
+  sesSecretKey  String?
+  fromName      String?
+  
+  users          User[]
+  contactLists   ContactList[]
+  contacts       Contact[]
+  segments       Segment[]
+  templates      Template[]
+  campaigns      Campaign[]
+  suppressionList SuppressionEntry[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("organisations")
+}
+
+model ContactList {
+  id          String   @id @default(cuid())
+  orgId       String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  tags        String[] @default([])
+  
+  members     ContactListMember[]
+  importJobs  ImportJob[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact_lists")
+}
+
+model Contact {
+  id           String   @id @default(cuid())
+  orgId        String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  email        String
+  firstName    String?
+  lastName     String?
+  status       String   @default("active") // active, unsubscribed, bounced, complained
+  customFields Json?    @default("{}")
+  source       String?  @default("manual") // import, form, manual, api
+
+  listMemberships ContactListMember[]
+  campaignSends   CampaignSend[]
+  events          EmailEvent[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([orgId, email])
+  @@map("contacts")
+}
+
+model ContactListMember {
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  listId      String
+  list        ContactList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  subscribedAt DateTime @default(now())
+
+  @@unique([contactId, listId])
+  @@map("contact_list_members")
+}
+
+model Segment {
+  id          String   @id @default(cuid())
+  orgId       String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name        String
+  rules       Json     // JSON rules for filtering
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("segments")
+}
+
+model Template {
+  id           String   @id @default(cuid())
+  orgId        String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name         String
+  category     String?
+  blocks       Json?    // Drag and drop structure
+  html         String?  @db.Text
+  thumbnailUrl String?
+  
+  campaigns    Campaign[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("templates")
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  orgId       String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name        String
+  subject     String?
+  previewText String?
+  fromName    String?
+  fromEmail   String?
+  status      String   @default("draft") // draft, scheduled, sending, sent, paused, cancelled
+  
+  templateId  String?
+  template    Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  
+  targetListId    String?
+  targetSegmentId String?
+  targetAll       Boolean @default(false)
+  
+  scheduledAt DateTime?
+  timezone    String?   @default("UTC")
+
+  sends       CampaignSend[]
+  events      EmailEvent[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("campaigns")
+}
+
+model CampaignSend {
+  id            String   @id @default(cuid())
+  campaignId    String
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contactId     String
+  contact       Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  sesMessageId  String?
+  status        String   @default("pending") // pending, sent, failed
+  sentAt        DateTime @default(now())
+
+  @@map("campaign_sends")
+}
+
+model EmailEvent {
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  eventType   String   // sent, delivered, opened, clicked, bounced, complained, unsubscribed
+  occurredAt  DateTime @default(now())
+  ip          String?
+  userAgent   String?
+  metadata    Json?    @default("{}")
+
+  @@map("email_events")
+}
+
+model SuppressionEntry {
+  id           String   @id @default(cuid())
+  orgId        String
+  organisation Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  email        String
+  reason       String   // bounced, complained, manual
+  suppressedAt DateTime @default(now())
+
+  @@unique([orgId, email])
+  @@map("suppression_list")
+}
+
+model ImportJob {
+  id          String   @id @default(cuid())
+  listId      String
+  list        ContactList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  status      String   @default("pending") // pending, processing, completed, failed
+  totalRows   Int      @default(0)
+  added       Int      @default(0)
+  updated     Int      @default(0)
+  skipped     Int      @default(0)
+  errored     Int      @default(0)
+  startedAt   DateTime @default(now())
+
+  @@map("import_jobs")
+}
