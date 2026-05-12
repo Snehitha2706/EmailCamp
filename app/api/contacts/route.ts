@@ -52,6 +52,15 @@ export async function POST(request: Request) {
         source: 'manual'
       }
     });
+    
+    // Activate Automation Engine Dispatcher (Asynchronous Background fire)
+    import('@/lib/automationEngine').then(({ triggerAutomationEvent }) => {
+      triggerAutomationEvent({
+        type: 'CONTACT_CREATED',
+        orgId: org.id,
+        contactId: newContact.id
+      }).catch(console.error);
+    });
 
     return NextResponse.json(newContact);
   } catch (error: any) {

@@ -37,6 +37,7 @@ model Organisation {
   templates      Template[]
   campaigns      Campaign[]
   suppressionList SuppressionEntry[]
+  automations    Automation[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -119,6 +120,7 @@ model Template {
   thumbnailUrl String?
   
   campaigns    Campaign[]
+  automations  Automation[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -209,4 +211,25 @@ model ImportJob {
   startedAt   DateTime @default(now())
 
   @@map("import_jobs")
+}
+
+model Automation {
+  id            String   @id @default(cuid())
+  orgId         String
+  organisation  Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name          String
+  triggerType   String   // e.g. "CONTACT_CREATED"
+  triggerListId String?  // Optional scope restriction to specific list
+  
+  actionTemplateId String
+  template         Template @relation(fields: [actionTemplateId], references: [id])
+  
+  status        String   @default("active") // active, paused
+  
+  totalRuns     Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("automations")
 }
