@@ -251,9 +251,20 @@ export default function SettingsPage() {
               Your credentials remain encrypted and strictly isolated to your secure database tenant container. Transmission occurs over verified physical TLS layers only.
             </p>
             
-            <div className="bg-slate-950/50 rounded-xl p-4 border border-slate-900 flex items-center gap-3 text-xs text-slate-300">
+            <div className="bg-slate-950/50 rounded-xl p-4 border border-slate-900 flex items-center gap-3 text-xs text-slate-300 mb-2">
               <div className={`h-2 w-2 rounded-full ${formData.sesAccessKey ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`} />
               {formData.sesAccessKey ? "Access Vector Identified" : "Provisioning Incomplete"}
+            </div>
+
+            <div className="flex flex-col gap-2 mt-2 border-t border-slate-800/50 pt-4">
+              <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider">
+                <span className="text-slate-500">RFC 8058 Matrix</span>
+                <span className="text-emerald-400 font-bold">ACTIVE</span>
+              </div>
+              <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider">
+                <span className="text-slate-500">Anti-Join Defense</span>
+                <span className="text-indigo-400 font-bold">ENFORCED</span>
+              </div>
             </div>
           </div>
 

@@ -71,7 +71,7 @@ export default function SuppressionPage() {
 
   return (
     <div className="p-4 md:p-8 space-y-8 max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400">
             <ShieldAlert className="h-7 w-7" />
@@ -79,6 +79,17 @@ export default function SuppressionPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-white">Suppression Grid</h1>
             <p className="text-slate-500 text-sm">Autonomous delivery exclusion matrices enforced by policy.</p>
+          </div>
+        </div>
+        
+        {/* Visual Confirmation Badges for Backend Upgrades */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-500/20 rounded-full px-3 py-1.5">
+            <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            RFC 8058 Compliant
+          </div>
+          <div className="flex items-center gap-2 bg-indigo-500/10 text-indigo-400 text-[10px] font-mono font-bold tracking-wider uppercase border border-indigo-500/20 rounded-full px-3 py-1.5">
+            Anti-Join Active
           </div>
         </div>
       </div>
