@@ -104,10 +104,10 @@ export default function AdminLayout({
             <button onClick={() => setIsMobileNavOpen(true)} className="p-2 text-slate-400 block md:hidden hover:text-white transition-colors">
               <Menu className="h-5 w-5" />
             </button>
-            <h2 className="text-sm font-medium text-slate-400 hidden sm:block">Operational Core</h2>
+            <h2 className="text-sm font-medium text-slate-400 hidden md:block">Operational Core</h2>
           </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            <button className="p-2 text-slate-400 hover:text-white glass-panel border border-card-border rounded-full relative hidden xs:flex">
+          <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            <button className="p-2 text-slate-400 hover:text-white glass-panel border border-card-border rounded-full relative hidden sm:flex">
               <Bell className="h-4 w-4" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full" />
             </button>
