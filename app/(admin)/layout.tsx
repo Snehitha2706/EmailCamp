@@ -80,7 +80,7 @@ export default function AdminLayout({
             />
             
             {/* Standard Clerk User Controls */}
-            <UserButton afterSignOutUrl="/sign-in" />
+            <UserButton />
           </div>
         </header>
 
