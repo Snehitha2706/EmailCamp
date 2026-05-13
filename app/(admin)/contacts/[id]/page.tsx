@@ -13,9 +13,12 @@ import {
   MousePointerClick, 
   Eye, 
   Send, 
-  Loader2 
+  Loader2,
+  Edit,
+  X,
+  Check
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ContactProfilePage() {
   const params = useParams();
@@ -23,21 +26,62 @@ export default function ContactProfilePage() {
   const [contact, setContact] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchContact() {
-      try {
-        const res = await fetch(`/api/contacts/${params.id}`);
-        if (res.ok) {
-          setContact(await res.json());
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allLists, setAllLists] = useState<any[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  async function fetchContact() {
+    try {
+      const res = await fetch(`/api/contacts/${params.id}`);
+      if (res.ok) {
+        setContact(await res.json());
       }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchContact();
   }, [params.id]);
+
+  async function openListEditor() {
+    try {
+      const res = await fetch('/api/lists');
+      if (res.ok) {
+        const lists = await res.json();
+        setAllLists(lists);
+        const current = contact?.listMemberships?.map((m: any) => m.listId) || [];
+        setSelectedLists(current);
+        setIsModalOpen(true);
+      }
+    } catch(e){}
+  }
+
+  function toggleList(id: string) {
+    setSelectedLists(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  }
+
+  async function saveListChanges() {
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/contacts/${params.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listIds: selectedLists })
+      });
+      if (res.ok) {
+        await fetchContact();
+        setIsModalOpen(false);
+      }
+    } catch(e){}
+    setIsSaving(false);
+  }
 
   if (loading) {
     return (
@@ -117,10 +161,19 @@ export default function ContactProfilePage() {
           </div>
 
           <div className="glass-panel p-6 space-y-4">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Tag className="h-4 w-4 text-blue-400" />
-              Mailing Lists
-            </h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <Tag className="h-4 w-4 text-blue-400" />
+                Mailing Lists
+              </h3>
+              <button 
+                onClick={openListEditor}
+                className="p-1 text-slate-500 hover:text-blue-400 transition"
+                title="Manage Lists"
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </button>
+            </div>
             {contact.listMemberships?.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {contact.listMemberships.map((m: any) => (
@@ -198,6 +251,88 @@ export default function ContactProfilePage() {
         </div>
 
       </div>
+
+      {/* Advanced List Editing Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-md glass-panel p-8 border border-white/5 rounded-3xl shadow-2xl bg-[#121214]"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="font-bold text-lg text-white">Recalibrate Listings</h3>
+                  <p className="text-xs text-slate-500 tracking-wide mt-0.5">SELECT ACTIVE DEPLOYMENT VECTORS</p>
+                </div>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 rounded-full bg-white/5 text-slate-400 hover:text-white transition"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2.5 max-h-64 overflow-y-auto pr-2 mb-6">
+                {allLists.length === 0 ? (
+                  <p className="text-center text-slate-500 italic text-xs py-8">No Mailing Structures established.</p>
+                ) : (
+                  allLists.map((list) => {
+                    const isAssigned = selectedLists.includes(list.id);
+                    return (
+                      <label
+                        key={list.id}
+                        className={`flex items-center gap-3 p-3.5 rounded-xl cursor-pointer border transition-all ${
+                          isAssigned
+                            ? 'bg-blue-600/10 border-blue-600/40 text-blue-300'
+                            : 'bg-slate-950/40 border-white/5 text-slate-400 hover:bg-white/5 hover:border-white/10'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isAssigned}
+                          onChange={() => toggleList(list.id)}
+                          className="hidden"
+                        />
+                        <div className={`h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                          isAssigned 
+                            ? 'bg-blue-600 border-blue-600 text-white' 
+                            : 'border-slate-700 text-transparent bg-slate-950'
+                        }`}>
+                          <Check className="h-3.5 w-3.5 stroke-[3px]" />
+                        </div>
+                        <div className="flex-1 truncate text-sm font-medium">
+                          {list.name}
+                        </div>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+
+              <div className="flex gap-3 justify-end border-t border-white/5 pt-6">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-slate-400 hover:text-white text-sm font-medium transition rounded-xl hover:bg-white/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveListChanges}
+                  disabled={isSaving}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition shadow-lg shadow-blue-600/15 active:scale-95 disabled:opacity-50"
+                >
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  Commit Config
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

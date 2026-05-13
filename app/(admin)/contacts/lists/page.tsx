@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ListFilter, Plus, Users, Calendar, ChevronRight, Loader2 } from 'lucide-react';
+import { ListFilter, Plus, Users, Calendar, ChevronRight, Loader2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -37,6 +37,25 @@ export default function ListsGridPage() {
         load();
       }
     } catch(e) {}
+  }
+
+  async function handleDelete(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    if(!confirm("Destroy this Mailing Structure? All associations will be severed.")) return;
+    
+    try {
+      const res = await fetch(`/api/lists/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        toast.success("Identity group purged from system parameters.");
+        load();
+      } else {
+        toast.error("Purge sequence failed.");
+      }
+    } catch(e) {
+      toast.error("Network fault.");
+    }
   }
 
   return (
@@ -92,8 +111,17 @@ export default function ListsGridPage() {
                     {new Date(list.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="p-2 rounded-lg bg-white/5 border border-white/5 text-slate-400 group-hover:text-blue-400 transition-colors">
-                  <ChevronRight className="h-4 w-4" />
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => handleDelete(list.id, e)}
+                    className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+                    title="Destroy Structure"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/5 text-slate-400 group-hover:text-blue-400 transition-colors">
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
                 </div>
               </div>
 

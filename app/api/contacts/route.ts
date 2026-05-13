@@ -36,7 +36,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const org = await getAuthOrg();
-    const { email, firstName, lastName } = await request.json();
+    const { email, firstName, lastName, listId } = await request.json();
 
     if (!email) {
       return NextResponse.json({ error: "Missing parameter" }, { status: 400 });
@@ -49,7 +49,12 @@ export async function POST(request: Request) {
         firstName: firstName?.trim() || null,
         lastName: lastName?.trim() || null,
         status: 'active',
-        source: 'manual'
+        source: 'manual',
+        listMemberships: listId ? {
+          create: {
+            listId: listId
+          }
+        } : undefined
       }
     });
     

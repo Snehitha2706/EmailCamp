@@ -34,7 +34,7 @@ function ContactsContent() {
   const [importing, setImporting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '' });
+  const [formData, setFormData] = useState({ email: '', firstName: '', lastName: '', listId: '' });
   const [lists, setLists] = useState<any[]>([]);
   const [selectedList, setSelectedList] = useState(listParam);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -138,7 +138,7 @@ function ContactsContent() {
       });
       
       if (res.ok) {
-        setFormData({ email: '', firstName: '', lastName: '' });
+        setFormData({ email: '', firstName: '', lastName: '', listId: '' });
         setIsModalOpen(false);
         loadAudience();
       } else {
@@ -213,7 +213,7 @@ function ContactsContent() {
                 {importing ? 'Processing...' : 'Import CSV'}
               </button>
               <button 
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => { setFormData({ email: '', firstName: '', lastName: '', listId: selectedList }); setIsModalOpen(true); }}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 text-white flex items-center gap-2 text-sm font-medium transition active:scale-95"
               >
                 <UserPlus className="h-4 w-4" />
@@ -382,6 +382,22 @@ function ContactsContent() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-slate-500 uppercase mb-1.5">Target Mailing Structure (List)</label>
+                  <select 
+                    className="w-full bg-slate-950/50 border border-card-border rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500/40 transition"
+                    value={formData.listId}
+                    onChange={(e) => setFormData({...formData, listId: e.target.value})}
+                  >
+                    <option value="" className="bg-slate-900 text-slate-400">-- Unassigned (No Group) --</option>
+                    {lists.map((lst) => (
+                      <option key={lst.id} value={lst.id} className="bg-slate-900 text-white">
+                        {lst.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
