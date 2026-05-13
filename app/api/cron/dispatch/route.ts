@@ -34,12 +34,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ status: "idle", message: "No queues matured." });
     }
 
+    // 🌐 RESOLVE DYNAMIC HOST DETAILS AT RUNTIME
+    const url = new URL(request.url);
+    const host = request.headers.get('host') || url.host;
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const dynamicOrigin = `${protocol}://${host}`;
+
     // 3. Execute loop execution sequentially to avoid concurrency locks on DB
     const results = [];
     for (const camp of dueCampaigns) {
       console.log(`🔥 CRON IGNITING: ${camp.name} (${camp.id})`);
       try {
-        const res = await executeCampaignDispatch(camp.id);
+        const res = await executeCampaignDispatch(camp.id, dynamicOrigin);
         results.push({ id: camp.id, success: res.success, details: res.summary });
       } catch (innerErr: any) {
         console.error(`❌ CRON FAULT for ${camp.id}:`, innerErr.message);

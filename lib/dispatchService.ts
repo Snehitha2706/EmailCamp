@@ -5,7 +5,7 @@ import { sendEmail } from '@/lib/email';
  * Monolithic Execution Module for Dispatching Campaigns.
  * This is designed to be invoked either by a USER Click or a Background CRON Job!
  */
-export async function executeCampaignDispatch(campaignId: string) {
+export async function executeCampaignDispatch(campaignId: string, requestOrigin?: string) {
   try {
     // 1. Gather holistic context without relying on user session (Perfect for CRON)
     const campaign = await prisma.campaign.findUnique({
@@ -73,7 +73,8 @@ export async function executeCampaignDispatch(campaignId: string) {
       return { success: false, error: "Zero targeted recipients identified." };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
+    const baseUrl = requestOrigin 
+      || process.env.NEXT_PUBLIC_APP_URL 
       || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
     const fromEmail = campaign.fromEmail || activeOrg?.fromEmail || process.env.NEXT_PUBLIC_FROM_EMAIL || "noreply@platform.com";
     const subject = campaign.subject || "Broadcast Event";
