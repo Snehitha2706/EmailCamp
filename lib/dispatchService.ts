@@ -74,7 +74,7 @@ export async function executeCampaignDispatch(campaignId: string) {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const fromEmail = campaign.fromEmail || activeOrg?.fromEmail || "noreply@platform.com";
+    const fromEmail = campaign.fromEmail || activeOrg?.fromEmail || process.env.NEXT_PUBLIC_FROM_EMAIL || "noreply@platform.com";
     const subject = campaign.subject || "Broadcast Event";
 
     // IN-MEMORY BUFFERS
