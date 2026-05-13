@@ -73,7 +73,8 @@ export async function executeCampaignDispatch(campaignId: string) {
       return { success: false, error: "Zero targeted recipients identified." };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
     const fromEmail = campaign.fromEmail || activeOrg?.fromEmail || process.env.NEXT_PUBLIC_FROM_EMAIL || "noreply@platform.com";
     const subject = campaign.subject || "Broadcast Event";
 
