@@ -115,12 +115,12 @@ export default function SettingsPage() {
         </div>
         
         <button 
-          onClick={handleSubmit}
-          disabled={saving}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-95 text-sm"
+          type="button"
+          disabled={true}
+          className="flex items-center gap-2 bg-slate-900/80 text-slate-400 font-semibold px-6 py-2.5 rounded-xl border border-slate-800 shadow-lg transition-all cursor-not-allowed text-sm"
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {saving ? "Committing..." : "Commit Changes"}
+          <Shield className="h-4 w-4 text-amber-500" />
+          Infrastructure Locked
         </button>
       </div>
 
@@ -148,9 +148,9 @@ export default function SettingsPage() {
                 <input 
                   type="text" 
                   value={formData.name}
-                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  disabled
                   placeholder="Acme Corp"
-                  className="w-full bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  className="w-full bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 />
               </div>
               
@@ -158,8 +158,8 @@ export default function SettingsPage() {
                 <label className="block text-xs font-mono text-slate-500 uppercase tracking-wider mb-2">Physical Deployment Zone (Region)</label>
                 <select 
                   value={formData.awsRegion}
-                  onChange={e => setFormData({...formData, awsRegion: e.target.value})}
-                  className="w-full bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  disabled
+                  className="w-full bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 >
                   <option value="us-east-1">US East (N. Virginia)</option>
                   <option value="us-west-2">US West (Oregon)</option>
@@ -185,9 +185,9 @@ export default function SettingsPage() {
                 <input 
                   type="text" 
                   value={formData.fromName}
-                  onChange={e => setFormData({...formData, fromName: e.target.value})}
+                  disabled
                   placeholder="Support Team"
-                  className="w-full bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  className="w-full bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 />
               </div>
               <div>
@@ -195,9 +195,9 @@ export default function SettingsPage() {
                 <input 
                   type="email" 
                   value={formData.fromEmail}
-                  onChange={e => setFormData({...formData, fromEmail: e.target.value})}
+                  disabled
                   placeholder="noreply@yourdomain.com"
-                  className="w-full bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  className="w-full bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 />
               </div>
             </div>
@@ -219,9 +219,9 @@ export default function SettingsPage() {
                 <input 
                   type="password" 
                   value={formData.sesAccessKey}
-                  onChange={e => setFormData({...formData, sesAccessKey: e.target.value})}
+                  disabled
                   placeholder="AKIAXXXXXXXXXXXXXXXX"
-                  className="w-full font-mono bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  className="w-full font-mono bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 />
               </div>
               
@@ -230,9 +230,9 @@ export default function SettingsPage() {
                 <input 
                   type="password" 
                   value={formData.sesSecretKey}
-                  onChange={e => setFormData({...formData, sesSecretKey: e.target.value})}
+                  disabled
                   placeholder="Secure Hash Boundary"
-                  className="w-full font-mono bg-slate-950/50 border border-slate-800 focus:border-emerald-500/50 rounded-xl p-3.5 text-slate-200 focus:outline-none transition text-sm"
+                  className="w-full font-mono bg-slate-900/20 border border-slate-800/50 opacity-75 rounded-xl p-3.5 text-slate-400 cursor-not-allowed text-sm"
                 />
               </div>
             </div>
