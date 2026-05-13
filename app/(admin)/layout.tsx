@@ -16,7 +16,8 @@ import {
   Bell,
   RefreshCw,
   Menu,
-  X
+  X,
+  ShieldAlert
 } from 'lucide-react';
 
 export default function AdminLayout({
@@ -46,7 +47,7 @@ export default function AdminLayout({
         </button>
       </div>
 
-      <nav className="flex-1 p-4 flex flex-col gap-2">
+      <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
         <div className="text-xs font-semibold text-slate-500 px-3 mb-2 mt-2 uppercase tracking-wider">Control</div>
         <NavLink href="/" icon={LayoutDashboard} label="Dashboard" active={pathname === "/"} />
         <NavLink href="/contacts" icon={Users} label="Contacts" active={pathname.startsWith("/contacts")} />
@@ -56,6 +57,9 @@ export default function AdminLayout({
         <div className="text-xs font-semibold text-slate-500 px-3 mb-2 mt-6 uppercase tracking-wider">Analytics</div>
         <NavLink href="/reports" icon={BarChart3} label="Reports" active={pathname.startsWith("/reports")} />
         <NavLink href="/automation" icon={RefreshCw} label="Automation" active={pathname.startsWith("/automation")} />
+
+        <div className="text-xs font-semibold text-slate-500 px-3 mb-2 mt-6 uppercase tracking-wider">Compliance</div>
+        <NavLink href="/settings/suppression" icon={ShieldAlert} label="Suppression Grid" active={pathname === "/settings/suppression"} />
       </nav>
 
       <div className="p-4 border-t border-card-border">
