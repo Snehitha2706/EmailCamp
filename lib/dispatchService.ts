@@ -24,14 +24,18 @@ export async function executeCampaignDispatch(campaignId: string) {
     const orgId = campaign.orgId;
     const activeOrg = await prisma.organisation.findUnique({ where: { id: orgId } });
     
-    if (!activeOrg?.sesAccessKey) {
+    const accessKey = activeOrg?.sesAccessKey || process.env.AWS_ACCESS_KEY_ID;
+    const secretKey = activeOrg?.sesSecretKey || process.env.AWS_SECRET_ACCESS_KEY;
+    const region = activeOrg?.awsRegion || process.env.AWS_REGION || 'ap-south-1';
+
+    if (!accessKey) {
       throw new Error("Credential Block: Organization AWS config needed.");
     }
 
     const awsConfig = {
-      accessKeyId: activeOrg.sesAccessKey,
-      secretAccessKey: activeOrg.sesSecretKey || '',
-      region: activeOrg.awsRegion || 'us-east-1'
+      accessKeyId: accessKey,
+      secretAccessKey: secretKey || '',
+      region: region
     };
 
     // Set system status to blocking lock so multiple crons don't fight over it!
